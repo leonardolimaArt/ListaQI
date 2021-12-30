@@ -24,6 +24,7 @@ public class clt_produtos extends JFrame implements ActionListener{
     float acumul_prc, ult_prc, prc_atual, acumul, ult_qtd, qtd_atual;
     float acumul_prc_2, ult_prc_2, prc_atual_2, acumul_2, ult_qtd_2, qtd_atual_2;
     float acumul_prc_3, ult_prc_3, prc_atual_3, acumul_3, ult_qtd_3, qtd_atual_3;
+    int num_lista;
 
     JLabel texto_1, texto_2, texto_5, texto_6, texto_9, texto_10, texto_4;
     JTable tabela, tabela_2, tabela_3;
@@ -113,7 +114,7 @@ public class clt_produtos extends JFrame implements ActionListener{
 
                     sysProduDAO ListaEdit = new sysProduDAO();
                     System.out.println(row);
-                    int num_lista = ListaEdit.codListaTable((String)tabela.getModel().getValueAt(row, 0), usr_obj.getCodigo_clt());
+                    num_lista = ListaEdit.codListaTable((String)tabela.getModel().getValueAt(row, 0), usr_obj.getCodigo_clt());
 
                     clt_edt_produ.setVisible(true);
                     clt_prod.setVisible(false);
@@ -180,12 +181,16 @@ public class clt_produtos extends JFrame implements ActionListener{
         texto_4.setFont(new Font("Arial", Font.PLAIN, 16));
         clt_edt_produ.add(texto_4);
 
-        String[] columnNames_edt = {"Produto", "Descrição", "Preço - R$", "Quantidade", "Excluir"};
-
-
+        String[] columnNames_edt = {"Produto", "Descrição", "Preço - R$", "Quantidade"};
 
         tabela_2 = new JTable();
-        dtm_2 = new DefaultTableModel(0, 0);
+        dtm_2 = new DefaultTableModel(0, 0){
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                //all cells false
+                return column == 3;
+            }
+        };
         dtm_2.setColumnIdentifiers(columnNames_edt);
         tabela_2.setModel(dtm_2);
 
@@ -199,8 +204,7 @@ public class clt_produtos extends JFrame implements ActionListener{
         clt_edt_produ.add(scrollPane_2);
         tabela_2.getTableHeader().setFont(new Font("Arial", Font.BOLD, 11));
         tabela_2.getTableHeader().setPreferredSize(new Dimension(70,30));
-        tabela_2.getColumnModel().getColumn(0).setPreferredWidth(150);
-        tabela_2.getColumnModel().getColumn(1).setPreferredWidth(250);
+        tabela_2.getColumnModel().getColumn(0).setPreferredWidth(350);
         tabela_2.setRowHeight(30);
         tabela_2.setShowVerticalLines(false);
         tabela_2.getTableHeader().setOpaque(false);
@@ -211,16 +215,10 @@ public class clt_produtos extends JFrame implements ActionListener{
         JComboBox<String> comboBox_produto = new JComboBox<>();
         sysProduDAO prodDAO_0 = new sysProduDAO();
 
-        for(getset_comboBox_prdoClt p_0: prodDAO_0.read_clt()){
+        for(getset_comboBox_prdoClt p_0: prodDAO_0.ler_clt()){
             comboBox_produto.addItem(p_0.getNome());
         }
         produto_column.setCellEditor(new DefaultCellEditor(comboBox_produto));
-
-        TableColumn excluir_column_2 = tabela_2.getColumnModel().getColumn(4);
-        JComboBox<String> comboBox_excluir_2 = new JComboBox<>();
-        comboBox_excluir_2.addItem("Sim");
-        comboBox_excluir_2.addItem("Não");
-        excluir_column_2.setCellEditor(new DefaultCellEditor(comboBox_excluir_2));
 
         DefaultTableCellRenderer centerRenderer_2 = new DefaultTableCellRenderer();
         centerRenderer_2.setHorizontalAlignment( SwingConstants.CENTER );
@@ -330,7 +328,7 @@ public class clt_produtos extends JFrame implements ActionListener{
         JComboBox<String> comboBox_produto_2 = new JComboBox<>();
         sysProduDAO prodDAO = new sysProduDAO();
 
-        for(getset_comboBox_prdoClt p: prodDAO.read_clt()){
+        for(getset_comboBox_prdoClt p: prodDAO.ler_clt()){
             comboBox_produto_2.addItem(p.getNome());
         }
 
@@ -345,7 +343,6 @@ public class clt_produtos extends JFrame implements ActionListener{
         DefaultTableCellRenderer centerRenderer_3 = new DefaultTableCellRenderer();
         centerRenderer_3.setHorizontalAlignment( SwingConstants.CENTER );
         tabela_3.setDefaultRenderer(Object.class, centerRenderer_3);
-
 
         dtm_3.addTableModelListener(new TableModelListener() {
             @Override
@@ -365,7 +362,6 @@ public class clt_produtos extends JFrame implements ActionListener{
                 }
             }
         });
-
 
         Atualizar_nv_b = new JButton("Criar");
         Atualizar_nv_b.addActionListener(this);
@@ -407,8 +403,6 @@ public class clt_produtos extends JFrame implements ActionListener{
         clt_nova_produ.add(texto_10);
 
         org_list_prdo();
-
-        //org_prdo_edt();
         org_prdo_nv();
     }
 
@@ -437,6 +431,7 @@ public class clt_produtos extends JFrame implements ActionListener{
                         prodNV_sess.insert_listaprd_prod_clt(listaprdoNv);
                     }
                 }
+                JOptionPane.showMessageDialog(CadOK,"Lista Criada", "Lista Criada", JOptionPane.INFORMATION_MESSAGE);
                 clt_nova_produ.setVisible(false);
                 clt_prod.setVisible(true);
                 atzlListaClt();
@@ -461,28 +456,23 @@ public class clt_produtos extends JFrame implements ActionListener{
             j = tabela.getRowCount();
             for (int i = 0; i < j; i++) {
                 if (tabela.getModel().getValueAt(i, 3) == "Sim") {
+                    sysProduDAO ListaProdEdit = new sysProduDAO();
+                    int num_lista = ListaProdEdit.codListaTable((String)tabela.getModel().getValueAt(i, 0), usr_obj.getCodigo_clt());
+                    System.out.println(num_lista);
+                    ListaProdEdit.deleteProdLista_clt(num_lista);
+                    ListaProdEdit.deleteLista_clt(num_lista);
                     ((DefaultTableModel) tabela.getModel()).removeRow(i);
                     j = tabela.getRowCount();
-                    i = i-1;
+                    i = i-1;//---------------------------------------------------------//
                 }
             }
-        }
-        if (e.getSource() == Atualizar_edt_b) {
-            j = tabela_2.getRowCount();
-            if(tabela_2.getModel().getValueAt(j-1, 4) == "Sim") {
-                dtm_2.addRow(new Object[]{"Selecione o produto", "Descrição", "0,00", "0", "Não"});
-            }
-            for (int i = 0; i < j; i++) {
-                if (tabela_2.getModel().getValueAt(i, 4) == "Sim") {
-                    ((DefaultTableModel) tabela_2.getModel()).removeRow(i);
-                    j = tabela_2.getRowCount();
-                    i = i-1;
-                }
-            }
+            org_list_prdo();
+            JOptionPane.showMessageDialog(CadOK,"Lista Atualizada!", "Lista Atualizada", JOptionPane.INFORMATION_MESSAGE);
         }
         if (e.getSource() == Voltar_edt_b) {
             clt_edt_produ.setVisible(false);
             clt_prod.setVisible(true);
+            atzlListaClt();
         }
         if (e.getSource() == Voltar_nv_b) {
             clt_nova_produ.setVisible(false);
@@ -501,6 +491,17 @@ public class clt_produtos extends JFrame implements ActionListener{
                     i = i-1;
                 }
             }
+        }
+        if (e.getSource() == Atualizar_edt_b) {
+            int k = tabela_2.getRowCount();
+            for (int i = 0; i < k; i++) {
+                sysProduDAO ListaProdEdit = new sysProduDAO();
+                int cnpj = ListaProdEdit.cnpjProduINT_clt((String)tabela_2.getModel().getValueAt(i, 0));
+                int codProd = ListaProdEdit.codProduINT_clt((String)tabela_2.getModel().getValueAt(i, 0));
+                ListaProdEdit.updateLista_clt(num_lista, cnpj, codProd, Integer.parseInt((String)tabela_2.getModel().getValueAt(i, 3)));
+                ListaProdEdit.updateNomeLista_clt(field_1.getText(),num_lista);
+            }
+            JOptionPane.showMessageDialog(CadOK,"Lista Atualizada!", "Lista Atualizada", JOptionPane.INFORMATION_MESSAGE);
         }
     }
     public void org_list_prdo(){

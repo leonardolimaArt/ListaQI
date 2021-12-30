@@ -84,7 +84,7 @@ public class emp_produtos extends JFrame implements ActionListener {
         JComboBox<String> comboBox_produto = new JComboBox<>();
         sysProduDAO prodDAO = new sysProduDAO();
 
-        for(getset_comboBox_prod p: prodDAO.read()){
+        for(getset_comboBox_prod p: prodDAO.ler()){
             comboBox_produto.addItem(p.getNome());
         }
 

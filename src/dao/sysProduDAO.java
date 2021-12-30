@@ -12,14 +12,12 @@ import login_sess.getset_form_emp;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 public class sysProduDAO {
 
-    public List<getset_comboBox_prod> read() {
+    public List<getset_comboBox_prod> ler() {
         String sql = "SELECT * FROM produto";
 
         Connection conn = null;
@@ -324,7 +322,7 @@ public class sysProduDAO {
     }
 
     //--------Cliente--------//
-    public List<getset_comboBox_prdoClt> read_clt() {
+    public List<getset_comboBox_prdoClt> ler_clt() {
         String sql = "SELECT * FROM venda";
 
         Connection conn = null;
@@ -406,43 +404,6 @@ public class sysProduDAO {
         return produtosLista;
     }
 
-    public getset_comboBox_prod codProd_clt(getset_comboBox_prod nomeProd) {
-        String sql = "SELECT codigo FROM produto WHERE nome = ?";
-
-        getset_comboBox_prod prodCod = new getset_comboBox_prod();
-
-        Connection conn = null;
-        PreparedStatement pstm = null;
-
-        try {
-            conn = ConectionFactory.createConnectionToMySQL();
-            pstm = (PreparedStatement) conn.prepareStatement(sql);
-
-            pstm.setString(1, nomeProd.getNome());
-
-            ResultSet rs = pstm.executeQuery();
-
-            if (rs.next()) {
-                prodCod.setCodigo(rs.getInt("codigo"));
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                if (pstm != null) {
-                    pstm.close();
-                }
-                if (conn != null) {
-                    conn.close();
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return prodCod;
-        }
-    }
-
     public boolean insert_lista_prd_clt(getset_lista_prod_clt lista_sess) {
 
         String sql = "INSERT INTO lista(nome, qtdeTotalProdutos, precoTotal, codigo) VALUES (?,?,?,?)";
@@ -517,8 +478,8 @@ public class sysProduDAO {
         }
     }
 
-    public boolean deleteProd_clt(getset_venda_prdo prodDel){
-        String sql = "DELETE FROM venda WHERE cnpj = ? AND codigo = ?";
+    public boolean deleteLista_clt(int row){
+        String sql = "DELETE FROM lista WHERE numero = ?";
 
         Connection conn = null;
         PreparedStatement pstm = null;
@@ -527,8 +488,39 @@ public class sysProduDAO {
             conn = ConectionFactory.createConnectionToMySQL();
             pstm = (PreparedStatement) conn.prepareStatement(sql);
 
-            pstm.setInt(1, prodDel.getCnpj());
-            pstm.setInt(2, prodDel.getCodigo());
+            pstm.setInt(1, row);
+
+            pstm.execute();
+
+            return true;
+        }catch(Exception e){
+            e.printStackTrace();
+        }finally{
+            try {
+                if (pstm != null) {
+                    pstm.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return false;
+    }
+
+    public boolean deleteProdLista_clt(int row){
+        String sql = "DELETE FROM listaproduto WHERE numero = ?";
+
+        Connection conn = null;
+        PreparedStatement pstm = null;
+
+        try {
+            conn = ConectionFactory.createConnectionToMySQL();
+            pstm = (PreparedStatement) conn.prepareStatement(sql);
+
+            pstm.setInt(1, row);
 
             pstm.execute();
 
@@ -589,8 +581,47 @@ public class sysProduDAO {
         }
     }
 
-    public boolean updateLista_clt(getset_venda_prdo prodAtlz){
-        String sql = "UPDATE venda SET qtde = ?, preco = ?, descricao = ? WHERE cnpj = ? AND codigo = ?";
+    public boolean updateLista_clt(int num_lista, int cnpj, int codigo_clt, int qtdr_nv){
+        String sql = "UPDATE listaproduto SET qtde = ? WHERE numero = ? AND codigo = ? AND cnpj = ?";
+
+        Connection conn = null;
+        PreparedStatement pstm = null;
+
+        try {
+            conn = ConectionFactory.createConnectionToMySQL();
+            pstm = (PreparedStatement) conn.prepareStatement(sql);
+            System.out.println(num_lista);
+            System.out.println(cnpj);
+            System.out.println(codigo_clt);
+            System.out.println(qtdr_nv);
+
+
+            pstm.setInt(1, qtdr_nv);
+            pstm.setInt(2, num_lista);
+            pstm.setInt(3, codigo_clt);
+            pstm.setInt(4, cnpj);
+
+            pstm.execute();
+
+            return true;
+        }catch(Exception e){
+            e.printStackTrace();
+        }finally{
+            try {
+                if (pstm != null) {
+                    pstm.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return false;
+    }
+    public boolean updateNomeLista_clt(String nome_lista, int numero){
+        String sql = "UPDATE lista SET nome = ? WHERE numero = ?";
 
         Connection conn = null;
         PreparedStatement pstm = null;
@@ -599,12 +630,8 @@ public class sysProduDAO {
             conn = ConectionFactory.createConnectionToMySQL();
             pstm = (PreparedStatement) conn.prepareStatement(sql);
 
-            pstm.setInt(1, prodAtlz.getQtde());
-            pstm.setDouble(2, prodAtlz.getPreco());
-            pstm.setString(3, prodAtlz.getDescricao());
-
-            pstm.setInt(4, prodAtlz.getCnpj());
-            pstm.setInt(5, prodAtlz.getCodigo());
+            pstm.setString(1, nome_lista);
+            pstm.setInt(2, numero);
 
             pstm.execute();
 
