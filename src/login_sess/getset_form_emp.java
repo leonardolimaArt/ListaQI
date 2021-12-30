@@ -59,7 +59,7 @@ public class getset_form_emp {
     }
 
     public void setCnpj_emp(String cnpj_emp) {
-        this.cnpj_emp = Integer.parseInt(cnpj_emp, 14);
+        this.cnpj_emp = Integer.parseInt(cnpj_emp);
     }
 
     public String getNome_emp() {

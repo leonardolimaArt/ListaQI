@@ -281,6 +281,7 @@ public class emp_perfil extends JFrame implements ActionListener, MouseListener 
 
         sysDAO perfilPNG = new sysDAO();
         getset_form_emp usrImgobj = usr_obj;
+
         if(perfilPNG.carrImgPerfil(usrImgobj) != null) {
             usrImgobj = perfilPNG.carrImgPerfil(usrImgobj);
             Image imgBDIcone = usrImgobj.getPerfilIcon().getImage();

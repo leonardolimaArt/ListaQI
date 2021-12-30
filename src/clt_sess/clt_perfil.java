@@ -275,6 +275,7 @@ public class clt_perfil extends JFrame implements ActionListener, MouseListener 
 
         sysDAO perfilPNG = new sysDAO();
         getset_form_clt usrImgobj = usr_obj;
+        
         if(perfilPNG.carrImgPerfil_clt(usrImgobj) != null) {
             usrImgobj = perfilPNG.carrImgPerfil_clt(usrImgobj);
             Image imgBDIcone = usrImgobj.getPerfilIcon_clt().getImage();
